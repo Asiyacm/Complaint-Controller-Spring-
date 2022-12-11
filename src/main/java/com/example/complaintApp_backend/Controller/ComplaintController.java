@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 
 @RestController
 public class ComplaintController {
@@ -26,9 +27,18 @@ public class ComplaintController {
         return map;
 }
 
-
-    @PostMapping("/signin")
-    public String UserLogin(){
-        return "Login";
+    @CrossOrigin("*")
+    @PostMapping(path="/signin",consumes = "application/json",produces="application/json")
+        public HashMap<String, String> UserLogin(@RequestBody Complaint c){
+            List<Complaint> result = (List<Complaint>) dao.UserLogin(c.getUsername(), c.getPassword());
+            HashMap<String, String> map = new HashMap<>();
+            if(result.size() == 0){
+                map.put("status","failed");
+            }else{
+                map.put("status","success");
+                map.put("userId",String.valueOf(result.get(0).getId()));
+            }
+            return map;
+        }
     }
-}
+
